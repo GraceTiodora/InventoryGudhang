@@ -1,0 +1,665 @@
+{
+  "info": {
+    "name": "REST API Inventory Gudang - Testing Collection",
+    "description": "Complete API testing collection untuk Inventory Gudang API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "SETUP - Environment",
+      "description": "Setup environment variables",
+      "item": [
+        {
+          "name": "Get Base URL",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventories",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. TEST CASE POSITIF - CREATE",
+      "description": "Positive test cases untuk CREATE inventory",
+      "item": [
+        {
+          "name": "TC1.1 - Create Inventory (Valid Data)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Response has success true', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "});",
+                  "pm.test('Response has data object', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "});",
+                  "pm.test('Data has correct fields', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.expect(jsonData.data).to.have.property('code');",
+                  "    pm.expect(jsonData.data).to.have.property('name');",
+                  "    pm.expect(jsonData.data).to.have.property('quantity');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"INV999\",\n  \"name\": \"Test Item Valid\",\n  \"category\": \"Testing\",\n  \"quantity\": 50,\n  \"unit\": \"pcs\",\n  \"price\": 150000,\n  \"supplier\": \"PT Test Supplier\",\n  \"description\": \"Item untuk testing positif\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventories",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories"]
+            }
+          }
+        },
+        {
+          "name": "TC1.2 - Create Inventory (Minimal Data)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Response has success true', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"INV998\",\n  \"name\": \"Minimal Item\",\n  \"category\": \"Test\",\n  \"quantity\": 10,\n  \"unit\": \"pcs\",\n  \"price\": 50000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventories",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. TEST CASE NEGATIF - CREATE",
+      "description": "Negative test cases untuk CREATE inventory",
+      "item": [
+        {
+          "name": "TC2.1 - Create dengan Code Kosong",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 422', function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "pm.test('Response has validation errors', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.errors).to.have.property('code');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"\",\n  \"name\": \"Test Item\",\n  \"category\": \"Test\",\n  \"quantity\": 10,\n  \"unit\": \"pcs\",\n  \"price\": 50000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventories",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories"]
+            }
+          }
+        },
+        {
+          "name": "TC2.2 - Create dengan Code Duplikat",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 422', function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "pm.test('Error message contains code validation', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.errors.code).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"INV001\",\n  \"name\": \"Duplicate Code\",\n  \"category\": \"Test\",\n  \"quantity\": 10,\n  \"unit\": \"pcs\",\n  \"price\": 50000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventories",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories"]
+            }
+          }
+        },
+        {
+          "name": "TC2.3 - Create dengan Harga Negatif",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 422', function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "pm.test('Validation error for price', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.errors).to.have.property('price');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"INV997\",\n  \"name\": \"Negative Price\",\n  \"category\": \"Test\",\n  \"quantity\": 10,\n  \"unit\": \"pcs\",\n  \"price\": -100000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventories",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories"]
+            }
+          }
+        },
+        {
+          "name": "TC2.4 - Create dengan Quantity Non-Integer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 422', function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "pm.test('Validation error for quantity', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.errors).to.have.property('quantity');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"INV996\",\n  \"name\": \"Invalid Quantity\",\n  \"category\": \"Test\",\n  \"quantity\": \"abc\",\n  \"unit\": \"pcs\",\n  \"price\": 50000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventories",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. TEST CASE POSITIF - READ",
+      "description": "Positive test cases untuk READ inventory",
+      "item": [
+        {
+          "name": "TC3.1 - Get All Inventories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has pagination', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.pagination).to.exist;",
+                  "    pm.expect(jsonData.pagination.total).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventories?per_page=10",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories"],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC3.2 - Get Inventory Detail (ID Valid)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has data object', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "    pm.expect(jsonData.data.id).to.equal(1);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventories/1",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. TEST CASE NEGATIF - READ",
+      "description": "Negative test cases untuk READ inventory",
+      "item": [
+        {
+          "name": "TC4.1 - Get Inventory dengan ID Tidak Ada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Response has error message', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.include('tidak ditemukan');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventories/999999",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "999999"]
+            }
+          }
+        },
+        {
+          "name": "TC4.2 - Search tanpa Query Parameter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Response has error for missing parameter', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventories/search/query",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "search", "query"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. TEST CASE POSITIF - UPDATE",
+      "description": "Positive test cases untuk UPDATE inventory",
+      "item": [
+        {
+          "name": "TC5.1 - Update Inventory (Valid Data)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has updated data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.data.name).to.include('Updated');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Laptop HP\",\n  \"quantity\": 20\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventories/1",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. TEST CASE NEGATIF - UPDATE",
+      "description": "Negative test cases untuk UPDATE inventory",
+      "item": [
+        {
+          "name": "TC6.1 - Update Inventory ID Tidak Ada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventories/999999",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "999999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. TEST CASE POSITIF - DELETE",
+      "description": "Positive test cases untuk DELETE inventory",
+      "item": [
+        {
+          "name": "TC7.1 - Delete Inventory (Valid ID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has success message', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.message).to.include('berhasil dihapus');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/inventories/2",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "2"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. TEST CASE NEGATIF - DELETE",
+      "description": "Negative test cases untuk DELETE inventory",
+      "item": [
+        {
+          "name": "TC8.1 - Delete Inventory ID Tidak Ada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Response has error message', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/inventories/999999",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "999999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. TEST CASE - FEATURE",
+      "description": "Test cases untuk fitur tambahan",
+      "item": [
+        {
+          "name": "TC9.1 - Search Inventory",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventories/search/query?q=laptop",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "search", "query"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "laptop"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC9.2 - Get by Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventories/category/Elektronik",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "category", "Elektronik"]
+            }
+          }
+        },
+        {
+          "name": "TC9.3 - Adjust Stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adjustment\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventories/1/adjust-stock",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "1", "adjust-stock"]
+            }
+          }
+        },
+        {
+          "name": "TC9.4 - Low Stock Report",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventories/report/low-stock?threshold=10",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "report", "low-stock"],
+              "query": [
+                {
+                  "key": "threshold",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC9.5 - Out of Stock Report",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventories/report/out-of-stock",
+              "protocol": "http",
+              "host": ["localhost:8000"],
+              "path": ["api", "inventories", "report", "out-of-stock"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "default"
+    },
+    {
+      "key": "created_inventory_id",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}
