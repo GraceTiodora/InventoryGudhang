@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Inventory;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Exceptions\InventoryException;
 
 class InventoryService
@@ -12,7 +12,7 @@ class InventoryService
     /**
      * Dapatkan semua inventory dengan pagination
      */
-    public function getAll(int $perPage = 15): Paginator
+    public function getAll(int $perPage = 15): LengthAwarePaginator
     {
         return Inventory::paginate($perPage);
     }
@@ -28,7 +28,7 @@ class InventoryService
     /**
      * Cari inventory berdasarkan nama atau kode
      */
-    public function search(string $query, int $perPage = 15): Paginator
+    public function search(string $query, int $perPage = 15): LengthAwarePaginator
     {
         return Inventory::where('name', 'like', "%{$query}%")
             ->orWhere('code', 'like', "%{$query}%")
@@ -112,7 +112,7 @@ class InventoryService
     /**
      * Dapatkan inventory berdasarkan kategori
      */
-    public function getByCategory(string $category, int $perPage = 15): Paginator
+    public function getByCategory(string $category, int $perPage = 15): LengthAwarePaginator
     {
         return Inventory::where('category', $category)->paginate($perPage);
     }
@@ -120,7 +120,7 @@ class InventoryService
     /**
      * Dapatkan inventory dengan stok rendah
      */
-    public function getLowStock(int $threshold = 10, int $perPage = 15): Paginator
+    public function getLowStock(int $threshold = 10, int $perPage = 15): LengthAwarePaginator
     {
         return Inventory::where('quantity', '<=', $threshold)->paginate($perPage);
     }
@@ -128,7 +128,7 @@ class InventoryService
     /**
      * Dapatkan inventory dengan stok kosong
      */
-    public function getOutOfStock(int $perPage = 15): Paginator
+    public function getOutOfStock(int $perPage = 15): LengthAwarePaginator
     {
         return Inventory::where('quantity', 0)->paginate($perPage);
     }
